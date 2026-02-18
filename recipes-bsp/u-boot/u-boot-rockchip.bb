@@ -17,10 +17,10 @@ PV = "2017.09"
 
 LIC_FILES_CHKSUM = "file://Licenses/README;md5=a2c678cfd4a4d97135585cad908541c6"
 
-SRCREV = "3c60a711e61015c1a61247837afbeaa85bd7fbf2"
+SRCREV = "6c807ac5008722e240f5282229c15a40aba4918f"
 SRCREV_rkbin = "a45caf5db84fddb3422142a77cf2b50336f11161"
 SRC_URI = " \
-	git://github.com/radxa/u-boot.git;protocol=https;branch=next-dev-buildroot; \
+	git://github.com/radxa/u-boot.git;protocol=https;branch=next-dev-v2024.10; \
 	git://github.com/radxa/rkbin.git;protocol=https;branch=develop-v2024.10;name=rkbin;destsuffix=rkbin; \
 "
 
