@@ -1,0 +1,66 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Build System <build@example.com>
+Date: Wed, 26 Feb 2026 16:00:00 +0000
+Subject: [PATCH] arm64: dts: rockchip: rk3528-rock-2f: add PCIe/USB3 MUX and
+ power GPIO
+
+The RK3528 combo PHY (combphy_pu) is shared between PCIe Gen2x1 and
+USB3. A hardware MUX controlled by GPIO4_PA5 selects which mode the
+PHY operates in. Without configuring this MUX, the PHY defaults to
+USB3 and PCIe link training always fails.
+
+Add the pcie_usb_selection regulator (GPIO4_PA5, active-high selects
+PCIe) matching the official rk3528-rock-2-enable-pcie.dts overlay.
+Also add the enable GPIO (GPIO1_PA4) to the vcc3v3_pcie20 regulator
+so the PCIe slot actually receives 3.3V power.
+
+The usbdrd_dwc3 node already limits USB to high-speed (USB2) mode,
+so no further USB changes are needed.
+
+Signed-off-by: Build System <build@example.com>
+---
+ arch/arm64/boot/dts/rockchip/rk3528-rock-2f.dts | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3528-rock-2f.dts b/arch/arm64/boot/dts/rockchip/rk3528-rock-2f.dts
+index 63e7ce07d027..fab4a0f43a74 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3528-rock-2f.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3528-rock-2f.dts
+@@ -115,10 +115,24 @@ vcc3v3_pcie20: vcc3v3-pcie20 {
+ 		regulator-name = "vcc3v3_pcie20";
+ 		regulator-min-microvolt = <3300000>;
+ 		regulator-max-microvolt = <3300000>;
++		enable-active-high;
++		gpio = <&gpio1 RK_PA4 GPIO_ACTIVE_HIGH>;
+ 		startup-delay-us = <5000>;
+ 		vin-supply = <&vcc5v0_sys>;
+ 	};
+ 
++	/* Select PCIe mode on combo PHY (disables USB3 SuperSpeed) */
++	pcie_usb_selection: pcie-usb-selection-regulator {
++		compatible = "regulator-fixed";
++		regulator-name = "pcie_usb_selection";
++		regulator-boot-on;
++		regulator-always-on;
++		enable-active-high;
++		gpio = <&gpio4 RK_PA5 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&pcie_usb_selection_pin>;
++	};
++
+ 	vdd_gpu: vdd_logic: vdd-logic {
+ 		compatible = "pwm-regulator";
+ 		pwms = <&pwm2 0 5000 1>;
+@@ -475,6 +489,10 @@ usb {
+ 		vcc5v0_host_en: vcc5v0-host-en {
+ 			rockchip,pins = <0 RK_PA1 RK_FUNC_GPIO &pcfg_pull_none>;
+ 		};
++
++		pcie_usb_selection_pin: pcie-usb-selection-pin {
++			rockchip,pins = <4 RK_PA5 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
+ 	};
+ 
+ 	wifi-bt {
+-- 
+2.20.1

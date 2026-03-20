@@ -1,20 +1,16 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Build System <build@example.com>
 Date: Tue, 18 Feb 2026 23:00:00 +0000
-Subject: [PATCH] arm64: dts: rockchip: rock-2f: restore chosen node, disable
- PCIe
+Subject: [PATCH] arm64: dts: rockchip: rock-2f: restore chosen node
 
 The Rock 2F DTS deletes the chosen node from rk3528-linux.dtsi,
 which removes the bootargs containing root=PARTUUID needed for
 Yocto rootfs mounting. Restore it.
 
-Disable PCIe as the DesignWare IP hangs on config space reads
-when no device is present, locking CPU1 in dw_pcie_read.
-
 Signed-off-by: Build System <build@example.com>
 ---
- arch/arm64/boot/dts/rockchip/rk3528-rock-2f.dts | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ arch/arm64/boot/dts/rockchip/rk3528-rock-2f.dts | 2 --
+ 1 file changed, 2 deletions(-)
 
 diff --git a/arch/arm64/boot/dts/rockchip/rk3528-rock-2f.dts b/arch/arm64/boot/dts/rockchip/rk3528-rock-2f.dts
 --- a/arch/arm64/boot/dts/rockchip/rk3528-rock-2f.dts
@@ -28,15 +24,5 @@ diff --git a/arch/arm64/boot/dts/rockchip/rk3528-rock-2f.dts b/arch/arm64/boot/d
  	aliases {
  		mmc0 = &sdhci;
  		mmc1 = &sdmmc;
-@@ -414,7 +412,7 @@
- 
- &pcie2x1 {
- 	reset-gpios = <&gpio1 RK_PA2 GPIO_ACTIVE_HIGH>;
- 	vpcie3v3-supply = <&vcc3v3_pcie20>;
--	status = "okay";
-+	status = "disabled";
- };
- 
- &u2phy_host {
 -- 
 2.20.1
